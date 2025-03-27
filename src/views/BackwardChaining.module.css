@@ -1,0 +1,415 @@
+:root {
+  --bg-primary: #141414;
+  --bg-secondary: #1a1a1a;
+  --accent-red: #e50914;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --card-bg: #2c2c2c;
+  --shadow-subtle: rgba(0,0,0,0.3);
+  --shadow-strong: rgba(0,0,0,0.5);
+}
+
+.genreSelection {
+  margin-top: -20px;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  perspective: 1000px;
+  border-radius: 24px;
+}
+
+.genreOptions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.genreButton {
+  background: linear-gradient(145deg, #2c2c2c, #242424);
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.genreButton:hover {
+  border-color: var(--accent-red);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(229,9,20,0.2);
+}
+
+.genreButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(229,9,20,0.1), transparent);
+  transition: all 0.5s ease;
+}
+
+.genreButton:hover::before {
+  left: 100%;
+}
+
+.symptomCheck {
+  margin-top: 40px;
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  transform-style: preserve-3d;
+  transform: rotateX(10deg);
+  box-shadow: 
+    0 20px 50px var(--shadow-strong), 
+    0 0 0 1px rgba(229,9,20,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.symptomCheck:hover {
+  transform: rotateX(0) scale(1.02);
+  box-shadow: 
+    0 30px 60px var(--shadow-strong), 
+    0 0 0 2px var(--accent-red);
+}
+
+.confirmationButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.yesButton, .noButton {
+  background: linear-gradient(145deg, #2c2c2c, #242424);
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.yesButton:hover, .noButton:hover {
+  border-color: var(--accent-red);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(229,9,20,0.2);
+}
+
+.yesButton::before, .noButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(229,9,20,0.1), transparent);
+  transition: all 0.5s ease;
+}
+
+.yesButton:hover::before, .noButton:hover::before {
+  left: 100%;
+}
+
+.backButton {
+  background: var(--accent-red);
+  color: var(--text-primary);
+  border: none;
+  padding: 12px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.backButton:hover {
+  background: #ff1a1a;
+  transform: scale(1.05);
+}
+
+.results {
+  margin-top: 40px;
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  transform-style: preserve-3d;
+  transform: rotateX(10deg);
+  box-shadow: 
+    0 20px 50px var(--shadow-strong), 
+    0 0 0 1px rgba(229,9,20,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.results:hover {
+  transform: rotateX(0) scale(1.02);
+  box-shadow: 
+    0 30px 60px var(--shadow-strong), 
+    0 0 0 2px var(--accent-red);
+}
+
+.symptomsSummary {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.symptomsSummary h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+}
+
+.symptomsSummary h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--accent-red);
+}
+
+.restartButton {
+  background: var(--accent-red);
+  color: var(--text-primary);
+  border: none;
+  padding: 12px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.restartButton:hover {
+  background: #ff1a1a;
+  transform: scale(1.05);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .symptomCheck, .results {
+    padding: 20px;
+  }
+}
+
+/* Subtle Background Noise */
+.genreSelection::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%" height="100%" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+}
+
+.movieSelection {
+  margin-top: -20px;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  perspective: 1000px;
+  border-radius: 24px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.movieGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.movieCard {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px var(--shadow-subtle);
+}
+
+.movieCard:hover {
+  border-color: var(--accent-red);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px var(--shadow-strong);
+}
+
+.questionFlow {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.analyzingTitle {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.answerOptions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.answerButton {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px var(--shadow-subtle);
+}
+
+.answerButton:hover {
+  border-color: var(--accent-red);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px var(--shadow-strong);
+}
+
+.resultsContainer {
+  margin-top: 40px;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 20px 50px var(--shadow-strong);
+}
+
+.successTitle {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.genreName {
+  font-size: 2.5rem;
+  color: var(--accent-red);
+  margin-bottom: 20px;
+}
+
+.restartButton {
+  background: var(--accent-red);
+  color: var(--text-primary);
+  border: none;
+  padding: 12px 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.restartButton:hover {
+  background: #ff1a1a;
+  transform: scale(1.05);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .movieGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resultsContainer {
+    padding: 20px;
+  }
+}
+
+.userChoices {
+  margin-top: 20px;
+  text-align: left;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px var(--shadow-subtle);
+}
+
+.userChoices h3 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.userChoices ul {
+  list-style: none;
+  padding: 0;
+}
+
+.userChoices li {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.userChoices li strong {
+  color: var(--text-primary);
+}
+
+.backButton, .restartButton {
+  background: var(--accent-red);
+  color: var(--text-primary);
+  border: none;
+  padding: 12px 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 15px var(--shadow-subtle);
+}
+
+.backButton:hover, .restartButton:hover {
+  background: #ff1a1a;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px var(--shadow-strong);
+}
+
+.backButton:active, .restartButton:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 10px var(--shadow-subtle);
+}
+
+@media (max-width: 600px) {
+  .movieSelection {
+    margin-top: 30px; /* Adjust this value as needed */
+  }
+}
