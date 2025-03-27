@@ -1,6 +1,8 @@
+// Import necessary modules and styles
 import { useState } from 'react';
 import styles from './backwardChaining.module.css';
 
+// Define movie pairs for user selection
 const MOVIE_PAIRS = [
   // Genre preference
   {
@@ -132,6 +134,7 @@ const MOVIE_PAIRS = [
   }
 ];
 
+// Define final moods with descriptions, emojis, colors, and recommendations
 const FINAL_MOODS = {
   adventurous: {
     description: "You're feeling adventurous and ready for excitement!",
@@ -201,19 +204,23 @@ const FINAL_MOODS = {
   }
 };
 
+// Main component for the Movie Mood Analyzer
 export default function MovieMoodAnalyzer() {
+  // State variables to manage the current question, selected traits, and analysis results
   const [currentPairIndex, setCurrentPairIndex] = useState(0);
   const [selectedMoodTraits, setSelectedMoodTraits] = useState([]);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [finalMood, setFinalMood] = useState(null);
   const [isSelecting, setIsSelecting] = useState(false);
 
+  // Handle user selection of a movie and update state accordingly
   const handleMovieSelection = (moodTraits) => {
     setIsSelecting(true);
     setTimeout(() => {
       const newTraits = [...selectedMoodTraits, ...moodTraits];
       setSelectedMoodTraits(newTraits);
 
+      // Move to the next question or complete the analysis
       if (currentPairIndex < MOVIE_PAIRS.length - 1) {
         setCurrentPairIndex(currentPairIndex + 1);
       } else {
@@ -224,18 +231,18 @@ export default function MovieMoodAnalyzer() {
     }, 300);
   };
 
+  // Determine the final mood based on selected traits
   const determineFinalMood = (traits) => {
     const traitCounts = traits.reduce((acc, trait) => {
       acc[trait] = (acc[trait] || 0) + 1;
       return acc;
     }, {});
 
-    // Get top 2 traits
+    // Get top 2 traits and check for combined mood
     const sortedTraits = Object.entries(traitCounts)
       .sort((a, b) => b[1] - a[1])
       .map(entry => entry[0]);
 
-    // Try to find a combined mood first
     const combinedMood = sortedTraits.join('-');
     if (FINAL_MOODS[combinedMood]) {
       setFinalMood(FINAL_MOODS[combinedMood]);
@@ -245,6 +252,7 @@ export default function MovieMoodAnalyzer() {
     }
   };
 
+  // Reset the analysis to start over
   const resetAnalysis = () => {
     setCurrentPairIndex(0);
     setSelectedMoodTraits([]);
@@ -252,6 +260,7 @@ export default function MovieMoodAnalyzer() {
     setFinalMood(null);
   };
 
+  // Render the results if the analysis is complete
   if (analysisComplete && finalMood) {
     return (
       <div className={styles.resultsContainer} style={{ backgroundColor: finalMood.color }}>
@@ -282,6 +291,7 @@ export default function MovieMoodAnalyzer() {
     );
   }
 
+  // Render the current movie pair for selection
   const currentPair = MOVIE_PAIRS[currentPairIndex];
 
   return (

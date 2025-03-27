@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styles from './forwardchaining.module.css';
 
+// Main component for the show recommendation engine
 export default function ShowRecommendationEngine() {
-  // Expanded mood factors state
+  // State to track user preferences for mood factors
   const [moodFactors, setMoodFactors] = useState({
     energy: null,
     stress: null,
@@ -20,7 +21,7 @@ export default function ShowRecommendationEngine() {
     languagePreference: null // New factor
   });
 
-  // Expanded show database with images
+  // Database of shows categorized by genres with images
   const SHOW_DATABASE = {
     "💥 High-Intensity Action": [
       { name: "The Mandalorian", image: "https://m.media-amazon.com/images/M/MV5BZDhlMzY0ZGItZTcyNS00ZTAxLWIyMmYtZGQ2ODg5OWZiYmJkXkEyXkFqcGdeQXVyODkzNTgxMDg@._V1_.jpg" },
@@ -86,7 +87,7 @@ export default function ShowRecommendationEngine() {
     ]
   };
 
-  // Question component (unchanged)
+  // Function to render a question with options for user input
   const askQuestion = (factor, questionText, options) => {
     return (
       <div className={styles.questionContainer}>
@@ -110,179 +111,89 @@ export default function ShowRecommendationEngine() {
     );
   };
 
-  // Updated generateRecommendations to work with new SHOW_DATABASE structure
-  const generateRecommendations = () => {
-    let recommendations = [];
-    let reasoning = [];
+  // Function to determine recommendations using backward chaining
+  const backwardChain = () => {
+    const goals = [
+      { name: "Relaxation", conditions: { stress: "Yes", mood: "Calm" } },
+      { name: "Entertainment", conditions: { stress: "No", energy: "Yes", goal: "Entertainment" } },
+      { name: "Thought-Provoking", conditions: { depth: "Yes" } },
+      { name: "Music-Focused", conditions: { music: "Yes" } }
+    ];
 
-    // Convert SHOW_DATABASE to array of show objects for easier processing
-    const allShows = Object.values(SHOW_DATABASE).flat();
+    // Check which goal matches the current mood factors
+    const matchedGoal = goals.find(goal => {
+      return Object.entries(goal.conditions).every(([key, value]) => moodFactors[key] === value);
+    });
 
-    // Primary Decision Tree: Stress Level
-    if (moodFactors.stress === "Yes") {
-      if (moodFactors.mood === "Calm") {
-        // High Stress + Calm Mood
-        recommendations = [
-          ...SHOW_DATABASE["🌍 Thought-Provoking Documentaries"],
-          ...SHOW_DATABASE["💘 Emotional Romance"]
-        ];
-        reasoning.push("High stress and calm mood suggest soothing, introspective content");
-      } else if (moodFactors.mood === "Energetic") {
-        // High Stress + Energetic Mood
-        recommendations = [
-          ...SHOW_DATABASE["😂 Light Comedy"],
-          ...SHOW_DATABASE["🎨 Innovative Animation"]
-        ];
-        reasoning.push("High stress and energetic mood point to uplifting, distracting shows");
-      } else if (moodFactors.mood === "Neutral") {
-        // High Stress + Neutral Mood
-        recommendations = [
-          ...SHOW_DATABASE["🤣 Dark Comedy"],
-          ...SHOW_DATABASE["🎭 Complex Drama"]
-        ];
-        reasoning.push("High stress and neutral mood suggest nuanced, engaging content");
-      }
-    } else if (moodFactors.stress === "No") {
-      // Nested Decision Tree for Low Stress Scenarios
-      if (moodFactors.energy === "Yes") {
-        if (moodFactors.goal === "Entertainment") {
-          // Low Stress + High Energy + Entertainment
+    if (matchedGoal) {
+      // Generate recommendations based on the matched goal
+      let recommendations = [];
+      let reasoning = [];
+
+      switch (matchedGoal.name) {
+        case "Relaxation":
+          recommendations = [
+            ...SHOW_DATABASE["🌍 Thought-Provoking Documentaries"],
+            ...SHOW_DATABASE["💘 Emotional Romance"]
+          ];
+          reasoning.push("Relaxation goal matched with calm mood and high stress.");
+          break;
+        case "Entertainment":
           recommendations = [
             ...SHOW_DATABASE["💥 High-Intensity Action"],
             ...SHOW_DATABASE["🚀 Mind-Bending Sci-Fi"],
             ...SHOW_DATABASE["🏆 Epic Competitive"]
           ];
-          reasoning.push("Low stress, high energy, and entertainment goal suggest thrilling content");
-        } else if (moodFactors.goal === "Relaxation") {
-          // Low Stress + High Energy + Relaxation
+          reasoning.push("Entertainment goal matched with low stress and high energy.");
+          break;
+        case "Thought-Provoking":
           recommendations = [
-            ...SHOW_DATABASE["🤣 Dark Comedy"],
+            ...SHOW_DATABASE["🎭 Complex Drama"],
+            ...SHOW_DATABASE["🌍 Thought-Provoking Documentaries"]
+          ];
+          reasoning.push("Thought-provoking content matched with preference for depth.");
+          break;
+        case "Music-Focused":
+          recommendations = [
             ...SHOW_DATABASE["🎨 Innovative Animation"]
           ];
-          reasoning.push("Low stress, high energy, but seeking relaxation points to clever, engaging shows");
-        }
-      } else if (moodFactors.energy === "No") {
-        // Genre and Social Preference Considerations
-        if (moodFactors.genre === "Action") {
-          if (moodFactors.socialPreference === "Group") {
-            recommendations = [
-              ...SHOW_DATABASE["💥 High-Intensity Action"],
-              ...SHOW_DATABASE["🏆 Epic Competitive"]
-            ];
-            reasoning.push("Action genre with group viewing suggests exciting, shareable content");
-          } else if (moodFactors.socialPreference === "Alone") {
-            recommendations = [
-              ...SHOW_DATABASE["🚀 Mind-Bending Sci-Fi"],
-              ...SHOW_DATABASE["🎭 Complex Drama"]
-            ];
-            reasoning.push("Action genre for solo viewing suggests immersive, deep narratives");
-          }
-        } else if (moodFactors.genre === "Drama") {
-          if (moodFactors.complexity === "High") {
-            recommendations = [
-              ...SHOW_DATABASE["🎭 Complex Drama"],
-              ...SHOW_DATABASE["🚀 Mind-Bending Sci-Fi"]
-            ];
-            reasoning.push("Drama genre with high complexity preference suggests intellectual content");
-          } else if (moodFactors.complexity === "Low") {
-            recommendations = [
-              ...SHOW_DATABASE["💘 Emotional Romance"],
-              ...SHOW_DATABASE["😂 Light Comedy"]
-            ];
-            reasoning.push("Drama genre with low complexity suggests accessible, emotional shows");
-          }
-        }
+          reasoning.push("Music-focused content matched with preference for good soundtracks.");
+          break;
+        default:
+          break;
       }
-    }
 
-    // Additional Contextual Filters
-    if (moodFactors.depth === "Yes") {
-      recommendations = recommendations.filter(show => 
-        SHOW_DATABASE["🎭 Complex Drama"].includes(show) || 
-        SHOW_DATABASE["🌍 Thought-Provoking Documentaries"].includes(show)
-      );
-      reasoning.push("Prioritized intellectually stimulating content");
-    }
+      // Remove duplicates, randomize, and limit to 3 shows
+      recommendations = [...new Set(recommendations)];
+      recommendations = recommendations.sort(() => Math.random() - 0.5).slice(0, 3);
 
-    if (moodFactors.music === "Yes") {
-      recommendations = recommendations.filter(show => 
-        SHOW_DATABASE["🎨 Innovative Animation"].includes(show)
-      );
-      reasoning.push("Highlighted shows with exceptional soundtracks");
-    }
-
-    // Fallback and Finalization
-    if (recommendations.length === 0) {
-      recommendations = allShows;
-      reasoning.push("No specific matches found, providing diverse recommendations");
-    }
-
-    // Remove duplicates, randomize, and limit to 3 shows
-    recommendations = [...new Set(recommendations)];
-    recommendations = recommendations.sort(() => Math.random() - 0.5).slice(0, 3);
-
-    return {
-      shows: recommendations,
-      reasoning: reasoning.join(". ") + "."
-    };
-  };
-
-  // Updated forwardChain to display images
-  const forwardChain = () => {
-    const chainOrder = [
-      { factor: 'stress', question: 'Are you feeling stressed? 🧠', options: ['Yes', 'No'] },
-      { factor: 'mood', question: 'How would you describe your current mood?', options: ['Calm', 'Energetic', 'Neutral'] },
-      { factor: 'energy', question: 'Are you feeling energetic today? ⚡', options: ['Yes', 'No'] },
-      { factor: 'goal', question: 'Are you looking to relax or be entertained? 🎯', options: ['Relaxation', 'Entertainment'] },
-      { factor: 'genre', question: 'Do you prefer Action or Drama? 🎭', options: ['Action', 'Drama'] },
-      { factor: 'socialPreference', question: 'Are you watching alone or with others? 👥', options: ['Alone', 'Group'] },
-      { factor: 'complexity', question: 'Do you prefer simple or complex storytelling? 🧩', options: ['Low', 'High'] },
-      { factor: 'depth', question: 'Do you prefer deep, thought-provoking content? 🧐', options: ['Yes', 'No'] },
-      { factor: 'music', question: 'Is good music/soundtrack important to you? 🎧', options: ['Yes', 'No'] }
-    ];
-
-    // Check if all factors have been answered
-    const allFactorsAnswered = chainOrder.every(chain => moodFactors[chain.factor] !== null);
-
-    // If all factors are answered, generate recommendations
-    if (allFactorsAnswered) {
-      const { shows, reasoning } = generateRecommendations();
       return (
         <div className={styles.recommendationContainer}>
-          
           <div className={styles.recommendationsGrid}>
-            {shows.map((show) => {
-              const category = Object.keys(SHOW_DATABASE).find(key => 
-                SHOW_DATABASE[key].some(s => s.name === show.name)
-              );
-              
-              return (
-                <div className={styles.showCard} key={show.name}>
-                  <div className={styles.showImageContainer}>
-                    <img 
-                      src={show.image} 
-                      alt={show.name} 
-                      className={styles.showImage}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://via.placeholder.com/300x450?text=No+Image";
-                      }}
-                    />
-                  </div>
-                  <h3>{show.name}</h3>
-                  <button className={styles.watchButton}>Watch Now</button>
+            {recommendations.map((show) => (
+              <div className={styles.showCard} key={show.name}>
+                <div className={styles.showImageContainer}>
+                  <img 
+                    src={show.image} 
+                    alt={show.name} 
+                    className={styles.showImage}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/300x450?text=No+Image";
+                    }}
+                  />
                 </div>
-              );
-            })}
+                <h3>{show.name}</h3>
+                <button className={styles.watchButton}>Watch Now</button>
+              </div>
+            ))}
           </div>
-          
           <div className={styles.reasoningBox}>
             <h3>How we chose these:</h3>
-            <p>{reasoning}</p>
+            <p>{reasoning.join(". ") + "."}</p>
           </div>
-          
           <button 
-            className={styles.restartButton}
+            class={styles.restartButton}
             onClick={() => setMoodFactors({
               energy: null,
               stress: null,
@@ -306,25 +217,43 @@ export default function ShowRecommendationEngine() {
       );
     }
 
-    // Find the first null factor
-    const currentChain = chainOrder.find(chain => moodFactors[chain.factor] === null);
+    // Find the first unanswered factor and ask the corresponding question
+    const unansweredFactor = Object.keys(moodFactors).find(key => moodFactors[key] === null);
 
-    return askQuestion(
-      currentChain.factor, 
-      currentChain.question, 
-      currentChain.options
-    );
+    if (unansweredFactor) {
+      const questionMap = {
+        stress: 'Are you feeling stressed? 🧠',
+        mood: 'How would you describe your current mood?',
+        energy: 'Are you feeling energetic today? ⚡',
+        goal: 'Are you looking to relax or be entertained? 🎯',
+        depth: 'Do you prefer deep, thought-provoking content? 🧐',
+        music: 'Is good music/soundtrack important to you? 🎧'
+      };
+
+      const optionsMap = {
+        stress: ['Yes', 'No'],
+        mood: ['Calm', 'Energetic', 'Neutral'],
+        energy: ['Yes', 'No'],
+        goal: ['Relaxation', 'Entertainment'],
+        depth: ['Yes', 'No'],
+        music: ['Yes', 'No']
+      };
+
+      return askQuestion(unansweredFactor, questionMap[unansweredFactor], optionsMap[unansweredFactor]);
+    }
+
+    return <p>No recommendations available. Please restart.</p>;
   };
 
+  // Render the main application
   return (
     <div className={styles.app}>
       <header className={styles.appHeader}>
         <h1>🎬 Advanced Mood-Based Show Recommender</h1>
         <p>A comprehensive journey to find your perfect show</p>
       </header>
-      
       <main>
-        {forwardChain()}
+        {backwardChain()}
       </main>
     </div>
   );
